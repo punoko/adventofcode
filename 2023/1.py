@@ -1,5 +1,4 @@
-import sys
-INPUT = open(sys.argv[1]).read()
+INPUT = open("input/1.txt").read()
 part1 = 0
 part2 = 0
 for line in INPUT.splitlines():
