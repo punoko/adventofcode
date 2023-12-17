@@ -9,17 +9,17 @@ for row in range(ROWS):
     number = 0
     valid = False
     gears = set()
-    for col in range(COLS+1):
+    for col in range(COLS + 1):
         if col < COLS and GRID[row][col].isdigit():
             number = number * 10 + int(GRID[row][col])
             for r in (-1, 0, 1):
                 for c in (-1, 0, 1):
-                    if 0 <= row+r < ROWS and 0 <= col+c < COLS:
-                        ch = GRID[row+r][col+c]
-                        if not ch.isdigit() and ch != '.':
+                    if 0 <= row + r < ROWS and 0 <= col + c < COLS:
+                        ch = GRID[row + r][col + c]
+                        if not ch.isdigit() and ch != ".":
                             valid = True
-                        if ch == '*':
-                            gears.add((row+r, col+c))
+                        if ch == "*":
+                            gears.add((row + r, col + c))
         elif number > 0:
             for gear in gears:
                 numbers.setdefault(gear, []).append(number)
