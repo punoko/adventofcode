@@ -1,61 +1,46 @@
 INPUT = open("input/7.txt").read().strip()
-HIGH = 0
-PAIR = 1
-PAIRS = 2
-THREE = 3
-FULL = 4
-FOUR = 5
-FIVE = 6
+TABLE = str.maketrans("TJQKA", "abcde")
+HIGH, PAIR, PAIRS, THREE, FULL, FOUR, FIVE = 0, 1, 2, 3, 4, 5, 6
 
 
-def get_values(hand: str) -> tuple[int, int]:
+def strength(hand: str, JOKER: bool) -> tuple[int, str]:
     counter = {}
     for card in hand:
         counter[card] = 1 + counter.get(card, 0)
-    joker = counter.get("J", 0)
+    joker = counter.get("b", 0) * JOKER
     match len(counter):
         case 5:
-            return HIGH, PAIR if joker else HIGH
+            value = PAIR if joker else HIGH
         case 4:
-            return PAIR, THREE if joker else PAIR
+            value = THREE if joker else PAIR
         case 3:
             if 2 in counter.values():
                 if joker == 2:
-                    return PAIRS, FOUR
+                    value = FOUR
                 elif joker == 1:
-                    return PAIRS, FULL
+                    value = FULL
                 else:
-                    return PAIRS, PAIRS
+                    value = PAIRS
             else:
-                return THREE, FOUR if joker else THREE
+                value = FOUR if joker else THREE
         case 2:
             if 2 in counter.values():
-                return FULL, FIVE if joker else FULL
+                value = FIVE if joker else FULL
             else:
-                return FOUR, FIVE if joker else FOUR
+                value = FIVE if joker else FOUR
         case 1:
-            return FIVE, FIVE
+            value = FIVE
         case _:
             assert False
+    return value, hand.replace("b", "1") if JOKER else hand
 
 
-HANDS = [line.split() for line in INPUT.splitlines()]
-TABLE = str.maketrans("TJQKA", "abcde")
-part1 = [[] for i in range(7)]
-part2 = [[] for i in range(7)]
-for hand, bid in HANDS:
-    bid = int(bid)
-    value1, value2 = get_values(hand)
-    hand = hand.translate(TABLE)
-    part1[value1].append((hand, bid))
-    hand = hand.replace("b", "1")
-    part2[value2].append((hand, bid))
-
-for part in [part1, part2]:
-    i = 0
+HANDS = []
+for hand, bid in [line.split() for line in INPUT.splitlines()]:
+    HANDS.append((hand.translate(TABLE), int(bid)))
+for JOKER in (False, True):
     score = 0
-    for group in part:
-        for hand, bid in sorted(group):
-            i += 1
-            score += i * bid
+    HANDS.sort(key=lambda hb: strength(hb[0], JOKER))
+    for i, (hand, bid) in enumerate(HANDS):
+        score += bid * (i + 1)
     print(score)
