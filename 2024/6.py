@@ -2,100 +2,55 @@
 # requires-python = ">=3.13"
 # dependencies = []
 # ///
-from itertools import cycle
 from pathlib import Path
-from enum import Enum
-
-
-class Direction(Enum):
-    U = (0, -1)
-    R = (1, 0)
-    D = (0, 1)
-    L = (-1, 0)
-
-
-class Guard:
-    def __init__(self, x: int, y: int) -> None:
-        self._cycle = cycle(Direction)
-        self.pos = x, y
-        self.dir = next(self._cycle)
-
-    def turn(self) -> None:
-        self.dir = next(self._cycle)
-
-    def next(self) -> tuple[int, int]:
-        return self.pos[0] + self.dir.value[0], self.pos[1] + self.dir.value[1]
-
-    def move(self) -> None:
-        self.pos = self.next()
-
-
-def get(x: int, y: int) -> str | None:
-    global lines
-    if x < 0 or x >= X_MAX or y < 0 or y >= Y_MAX:
-        return None
-    else:
-        return lines[y][x]
-
-
-def mark(x: int, y: int, char: str) -> None:
-    global lines
-    line = list(lines[y])
-    line[x] = char
-    lines[y] = "".join(line)
 
 
 input = Path("input", Path(__file__).name).with_suffix(".txt")
-LINES = tuple(input.read_text().splitlines())
-Y_MAX = len(LINES)
-X_MAX = len(LINES[0])
-START = None
-for y, line in enumerate(LINES):
+MAP = tuple(input.read_text().splitlines())
+Y_MAX = len(MAP)
+X_MAX = len(MAP[0])
+DIRECTIONS = ((0, -1), (1, 0), (0, 1), (-1, 0))
+
+start_x = None
+start_y = None
+for y, line in enumerate(MAP):
     if "^" in line:
-        START = (line.index("^"), y)
+        start_y = y
+        start_x = line.index("^")
         break
-if START is None:
-    exit(1)
+if start_x is None or start_y is None:
+    raise ValueError("starting position not found")
 
+
+SEEN_P1 = set()
 part1 = 0
-lines = list(LINES)
-guard = Guard(*START)
-while get(*guard.pos):
-    if get(*guard.next()) == "#":
-        guard.turn()
-    else:
-        mark(*guard.pos, char=guard.dir.name)
-        guard.move()
-total = "".join(lines)
-for char in "URDL":
-    part1 += total.count(char)
-print(part1)
-
 part2 = 0
-for y, line in enumerate(LINES):
+for y, line in enumerate(MAP):
     for x, _ in enumerate(line):
-        print((x, y))
-        if (x, y) == START:
-            continue
-        lines = list(LINES)
-        mark(x, y, "#")
-        guard = Guard(*START)
-        count = 0
-        while get(*guard.pos):
-            if get(*guard.next()) == "#":
-                guard.turn()
-            elif get(*guard.next()) == guard.dir.name:
-                print("loop")
+        direction = 0
+        pos_x = start_x
+        pos_x = start_y
+        SEEN_P1 = set()
+        SEEN_P2 = set()
+        while True:
+            if (pos_x, pos_x, direction) in SEEN_P2:
                 part2 += 1
                 break
-            elif count > 10000:
-                # dirty hack because this implementation breaks
-                # when the loop is on a straight line lol
-                print("loop lol")
-                part2 += 1
+            SEEN_P1.add((pos_x, pos_x))
+            SEEN_P2.add((pos_x, pos_x, direction))
+            next_x = pos_x + DIRECTIONS[direction][0]
+            next_y = pos_x + DIRECTIONS[direction][1]
+            if not (0 <= next_x < X_MAX and 0 <= next_y < Y_MAX):
+                # out of bounds
                 break
+            elif MAP[next_y][next_x] == "#" or (next_x, next_y) == (x, y):
+                # turn right
+                direction = (direction + 1) % len(DIRECTIONS)
             else:
-                count += 1
-                mark(*guard.pos, char=guard.dir.name)
-                guard.move()
+                # move forward
+                pos_x = next_x
+                pos_x = next_y
+        if MAP[y][x] == "#":
+            part1 = len(SEEN_P1)
+print(part1)
 print(part2)
