@@ -39,3 +39,30 @@ while i > j:
     except ValueError:
         break
 print(checksum(part1))
+
+part2 = blocks.copy()
+i = len(part2)
+while True:
+    j = i
+    i -= 1
+    if part2[i] == ".":
+        continue
+    while part2[i - 1] == part2[i]:
+        i -= 1
+    try:  # look for first free block left of i
+        k = part2.index(".", 0, i)
+    except ValueError:
+        break
+    length = j - i
+    free = ["."] * length
+    while True:
+        if part2[k : k + length] != free:
+            try:
+                k = part2.index(".", k + 1, j)
+                continue
+            except ValueError:
+                break
+        part2[k : k + length] = part2[i:j]
+        part2[i:j] = free
+        break
+print(checksum(part2))
