@@ -12,17 +12,17 @@ for r, row in enumerate(MAP):
     for c, char in enumerate(row):
         if char != "0":
             continue
-        paths = []
-        for height in range(10):
-            paths.append(set())
-            if height == 0:
-                paths[height].add((r, c))
-                continue
-            for x, y in paths[height - 1]:
+        trails = [(r, c)]
+        for height in range(1, 10):
+            tmp = []
+            while trails:
+                x, y = trails.pop()
                 for xx, yy in ((0, -1), (0, 1), (-1, 0), (1, 0)):
                     if 0 <= x + xx < len(MAP) and 0 <= y + yy < len(MAP[0]):
                         if MAP[x + xx][y + yy] == str(height):
-                            paths[height].add((x + xx, y + yy))
-        part1 += len(paths[9])
+                            tmp.append((x + xx, y + yy))
+            trails = tmp
+        part1 += len(set(trails))
+        part2 += len(trails)
 print(part1)
 print(part2)
