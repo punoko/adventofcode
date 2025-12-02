@@ -16,7 +16,7 @@ def check_range(a: str, b: str) -> set[int]:
     for length in possible_length:
         for pattern in range(int(a[:length]), int("9" * length) + 1):
             num = int(str(pattern) * (len(a) // length))
-            if num in range(int(a), int(b) + 1):
+            if num in range(int(a), min(upper, int(b)) + 1):
                 invalid.add(num)
     return invalid
 
