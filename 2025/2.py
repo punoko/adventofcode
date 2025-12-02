@@ -13,37 +13,29 @@ input = Path("input", Path(__file__).name).with_suffix(".txt")
 input = Path(sys.argv[1]) if len(sys.argv) > 1 else input
 
 
-def check_range(a, b) -> set[int] | None:
+def check_range(a: str, b: str) -> set[int]:
     invalid = set()
-    if len(a) % 2 == 0:
-        start = a
-    else:
-        start = "1" + "0" * len(a)
-    if int(start) > int(b):
-        return
-    elif len(b) % 2 == 0:
-        end = b
-    else:
-        end = "9" * (len(b) - 1)
-    if len(start) != len(end):
-        raise ValueError("require split range: %s-%s", a, b)
-    size = len(start) // 2
-    h_start = int(start[:size])
-    h_end = int(end[:size])
-    for half in range(h_start, h_end + 1):
-        test = int(f"{half}{half}")
-        if test in range(int(start), int(end) + 1):
-            invalid.add(test)
-    return invalid
 
+    upper = int("9" * len(a)) + 1
+    if upper in range(int(a), int(b) + 1):
+        invalid |= check_range(str(upper), b)
+
+    possible_length = [x for x in range(1, len(a) // 2 + 1) if len(a) % x == 0]
+    for length in possible_length:
+        for pattern in range(int(a[:length]), int("9" * length) + 1):
+            num = int(str(pattern) * (len(a) // length))
+            if num in range(int(a), int(b) + 1):
+                invalid.add(num)
+    return invalid
 
 for r in input.read_text().split(","):
     a, b = r.strip().split("-")
     invalid = check_range(a, b)
-    if not invalid:
-        continue
     for n in invalid:
-        part1 += n
+        part2 += n
+        nstr = str(n)[: len(str(n)) // 2]
+        if str(n) == f"{nstr}{nstr}":
+            part1 += n
 
 
 print(part1)
