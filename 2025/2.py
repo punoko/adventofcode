@@ -1,9 +1,8 @@
 import sys
 
+input = sys.stdin.read()
 part1 = 0
 part2 = 0
-
-input = sys.stdin.read()
 
 def check_range(a: str, b: str) -> set[int]:
     invalid = set()
