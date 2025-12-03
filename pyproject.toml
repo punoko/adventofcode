@@ -1,0 +1,17 @@
+[project]
+name = "adventofcode"
+version = "0.0.0"
+requires-python = ">=3.10"
+
+[dependency-groups]
+dev = ["ruff"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D",      # docstrings
+    "A001",   # builtin shadowing
+    "INP001", # __init__.py
+    "N999",   # invalid module name
+    "T201",   # use print
+]
