@@ -1,33 +1,36 @@
 import sys
 
+
+def get_invalid_id(a: str, b: str) -> tuple[set[int], set[int]]:
+    p1_invalid = set()
+    p2_invalid = set()
+    for id_len in range(len(a), len(b) + 1):
+        for seq_repeat in range(2, len(b) + 1):
+            if id_len % seq_repeat != 0:
+                continue
+            seq_len = id_len // seq_repeat
+            seq_min = 10 ** (seq_len - 1) if id_len > len(a) else int(a[:seq_len])
+            for seq in range(seq_min, 10**seq_len):
+                id = int(str(seq) * seq_repeat)
+                if id > int(b):
+                    break
+                if id >= int(a):
+                    if seq_repeat == P1_REPEAT:
+                        p1_invalid.add(id)
+                    p2_invalid.add(id)
+    return p1_invalid, p2_invalid
+
+
 input = sys.stdin.read()
 part1 = 0
 part2 = 0
 
-def check_range(a: str, b: str) -> set[int]:
-    invalid = set()
-
-    upper = int("9" * len(a)) + 1
-    if upper in range(int(a), int(b) + 1):
-        invalid |= check_range(str(upper), b)
-
-    possible_length = [x for x in range(1, len(a) // 2 + 1) if len(a) % x == 0]
-    for length in possible_length:
-        for pattern in range(int(a[:length]), int("9" * length) + 1):
-            num = int(str(pattern) * (len(a) // length))
-            if num in range(int(a), min(upper, int(b)) + 1):
-                invalid.add(num)
-    return invalid
-
+P1_REPEAT = 2
 for r in input.split(","):
     a, b = r.strip().split("-")
-    invalid = check_range(a, b)
-    for n in invalid:
-        part2 += n
-        nstr = str(n)[: len(str(n)) // 2]
-        if str(n) == f"{nstr}{nstr}":
-            part1 += n
-
+    p1_invalid, p2_invalid = get_invalid_id(a, b)
+    part1 += sum(p1_invalid)
+    part2 += sum(p2_invalid)
 
 print(part1)
 print(part2)
