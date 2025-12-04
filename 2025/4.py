@@ -1,43 +1,47 @@
 import sys
 
 
-def get(map, r: int, c: int) -> str:
-    if r < 0 or r >= ROW or c < 0 or c >= COL:
-        return "!"
-    return map[r][c]
+def is_roll(r: int, c: int) -> bool:
+    return r >= 0 and r < ROW and c >= 0 and c < COL and GRID[r][c] == "@"
 
 
-def can_access_roll(map, row: int, col: int) -> bool:
-    neigh = 0
+def can_access(row: int, col: int) -> bool:
+    adj = 0
     for dir in DIRECTIONS:
         r = row + dir[0]
         c = col + dir[1]
-        if get(map, r, c) == "@":
-            neigh += 1
-    return neigh < MAX_ROLLS
+        adj += 1 if is_roll(r, c) else 0
+    return adj < MAX
 
 
 input = sys.stdin.read()
 part1 = 0
 part2 = 0
 
-MAP = tuple(tuple(r) for r in input.splitlines())
-ROW = len(MAP)
-COL = len(MAP[0])
 DIRECTIONS = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
-MAX_ROLLS = 4
-map = [list(row) for row in MAP]
+GRID = [list(line) for line in input.splitlines()]
+MAX = 4
+ROW = len(GRID)
+COL = len(GRID[0])
+
+first = True
 while True:
     changed = False
-    for r, line in enumerate(map):
-        for c, char in enumerate(line):
+    tmp = [line.copy() for line in GRID]
+    for r, row in enumerate(GRID):
+        for c, char in enumerate(row):
             if char != "@":
                 continue
-            if can_access_roll(map, r, c):
+            if can_access(r, c):
                 changed = True
-                map[r][c] = "."
+                tmp[r][c] = "x"
+                if first:
+                    part1 += 1
                 part2 += 1
+    first = False
+    GRID = tmp
     if not changed:
         break
+
 print(part1)
 print(part2)
