@@ -4,9 +4,8 @@ input = sys.stdin.read()
 part1 = 0
 part2 = 0
 
-type Ranges = list[tuple[int, int]]
-temp: Ranges = []
-FRESH: Ranges = []
+temp: list[tuple[int, int]] = []
+FRESH: list[tuple[int, int]] = []
 INGREDIENTS: list[int] = []
 for line in input.splitlines():
     if "-" in line:
