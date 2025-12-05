@@ -1,10 +1,10 @@
 [project]
 name = "adventofcode"
 version = "0.0.0"
-requires-python = ">=3.10"
-
-[dependency-groups]
-dev = ["ruff"]
+requires-python = ">=3.12"
+dependencies = [
+    "rich>=14.2.0",
+]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -14,4 +14,9 @@ ignore = [
     "INP001", # __init__.py
     "N999",   # invalid module name
     "T201",   # use print
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.7",
 ]
