@@ -5,40 +5,34 @@ input = sys.stdin.read()
 part1 = 0
 part2 = 0
 
+GRID = [line for line in input.split("\n") if line]
+OPERATORS = GRID.pop()
+R = len(GRID)
+C = len(GRID[0])
 
-GRID = [line.split() for line in input.splitlines() if line]
-ROW = len(GRID)
-COL = len(GRID[0])
-
-for c in range(COL):
-    operator = GRID[-1][c]
-    numbers = [int(GRID[x][c]) for x in range(ROW - 1)]
-    if operator == "+":
-        part1 += sum(numbers)
-    else:
-        part1 += math.prod(numbers)
-
-
-G = [line for line in input.split("\n") if line]
-ROW = len(G)
-COL = len(G[0])
 operator = ""
-numbers = []
-for c in range(COL):
-    if G[-1][c] != " ":
-        operator = G[-1][c]
-    string = [G[r][c] for r in range(ROW - 1)]
-    string = "".join(string).strip()
-    if string:
-        numbers.append(int(string))
-        if c < COL - 1:
-            continue
-    if operator == "+":
-        part2 += sum(numbers)
-    elif operator == "*":
-        part2 += math.prod(numbers)
-    numbers = []
+part1_numbers = []
+part2_numbers = []
+for c in range(C):
+    if OPERATORS[c] != " ":
+        operator = OPERATORS[c]
+        horizontal = [GRID[r][c:].split()[0] for r in range(R)]
+        part1_numbers = [int(n) for n in horizontal]
 
+    vertical = [GRID[r][c] for r in range(R)]
+    vertical = "".join(vertical).strip()
+    if vertical:
+        part2_numbers.append(int(vertical))
+        if c < C - 1:
+            continue
+
+    if operator == "+":
+        part1 += sum(part1_numbers)
+        part2 += sum(part2_numbers)
+    elif operator == "*":
+        part1 += math.prod(part1_numbers)
+        part2 += math.prod(part2_numbers)
+    part2_numbers = []
 
 print(part1)
 print(part2)
