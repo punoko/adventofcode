@@ -1,27 +1,23 @@
 import sys
+from collections import defaultdict
 
 input = sys.stdin.read()
 part1 = 0
-part2 = 0
 
-G = input.splitlines()
-beams = set()
-beams.add(G.pop(0).index("S"))
-while G:
-    new = set()
-    row = G.pop(0)
+# count timelines for each beam, start with 1
+GRID = input.splitlines()
+start = GRID.pop(0).index("S")
+beams: dict[int, int] = defaultdict(int)
+beams[start] = 1
+while GRID:
+    row = GRID.pop(0)
     for i, space in enumerate(row):
-        if i not in beams:
-            continue
-        elif space == ".":
-            # beam goes through
-            pass
-        elif space == "^":
-            # beam is split
-            beams.remove(i)
-            beams.add(i - 1)
-            beams.add(i + 1)
+        if i in beams and space == "^":
             part1 += 1
+            beams[i - 1] += beams[i]
+            beams[i + 1] += beams[i]
+            del beams[i]
+part2 = sum(beams.values())
 
 print(part1)
 print(part2)
