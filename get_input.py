@@ -24,5 +24,5 @@ except KeyError:
 
 response = requests.get(url=url, cookies=cookies, timeout=3)
 print(args.year, "day", args.day, file=sys.stderr)
-print(response.text)
+print(response.text.strip())
 response.raise_for_status()
