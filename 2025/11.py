@@ -1,22 +1,36 @@
 import sys
-from collections import deque
+from functools import cache
 
-input = sys.stdin.read()
-part1 = 0
-part2 = 0
+
+@cache
+def find_out_part1(device: str) -> int:
+    if device == "out":
+        return 1
+    return sum(find_out_part1(dev) for dev in CONNECTIONS[device])
+
+
+@cache
+def find_out_part2(
+    device: str,
+    seen_dac: bool = False,
+    seen_fft: bool = False,
+) -> int:
+    if device == "out":
+        return 1 if (seen_dac and seen_fft) else 0
+    if device == "dac":
+        seen_dac = True
+    elif device == "fft":
+        seen_fft = True
+    return sum(
+        find_out_part2(dev, seen_dac, seen_fft)
+        for dev in CONNECTIONS[device]
+    )
+
 
 CONNECTIONS: dict[str, list[str]] = {}
-for line in input.splitlines():
-    key, values = line.split(":")
-    CONNECTIONS[key] = values.strip().split()
+for line in sys.stdin.read().splitlines():
+    device, outputs = line.split(":")
+    CONNECTIONS[device] = outputs.split()
 
-paths = deque(CONNECTIONS["you"])
-while paths:
-    current = paths.popleft()
-    if current == "out":
-        part1 += 1
-    else:
-        paths.extend(CONNECTIONS[current])
-
-print(part1)
-print(part2)
+print(find_out_part1("you"))
+print(find_out_part2("svr"))
