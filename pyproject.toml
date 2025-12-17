@@ -16,6 +16,7 @@ dev = [
 select = ["ALL"]
 ignore = [
     "D",      # docstrings
+    "FBT",    # boolean arguments
     "A001",   # builtin shadowing
     "INP001", # __init__.py
     "N999",   # invalid module name
