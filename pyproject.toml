@@ -15,7 +15,7 @@ dev = [
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "D",      # docstrings
+    "D1",     # missing docstrings
     "FBT",    # boolean arguments
     "A001",   # builtin shadowing
     "INP001", # __init__.py
