@@ -24,5 +24,6 @@ ignore = [
     "FBT",    # boolean arguments
     "INP001", # __init__.py
     "N999",   # invalid module name
+    "S324",   # insecure hash
     "T201",   # use print
 ]
