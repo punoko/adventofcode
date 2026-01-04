@@ -6,8 +6,8 @@ import sys
 import requests
 
 DECEMBER = 12
-tz = datetime.timezone(offset=datetime.timedelta(hours=-5))  # UTC-5
-today = datetime.datetime.now(tz=tz).date()
+eastern = datetime.timezone(offset=datetime.timedelta(hours=-5))
+today = datetime.datetime.now(tz=eastern).date()
 year = today.year if today.month == DECEMBER else today.year - 1
 day = today.day if today.month == DECEMBER else None
 
