@@ -1,74 +1,46 @@
-MAP = open("input/10.txt").read().strip().splitlines()
-PIPES = {  # maps the direction out of a pipe to its direction coming in
-    "|": {"N": "N", "S": "S"},
-    "-": {"E": "E", "W": "W"},
-    "L": {"W": "N", "S": "E"},
-    "J": {"E": "N", "S": "W"},
-    "7": {"E": "S", "N": "W"},
-    "F": {"W": "S", "N": "E"},
+import sys
+
+SOUTH = (1, 0)
+NORTH = (-1, 0)
+EAST = (0, 1)
+WEST = (0, -1)
+CONNECTIONS = {
+    "|": (NORTH, SOUTH),
+    "-": (EAST, WEST),
+    "L": (NORTH, EAST),
+    "J": (NORTH, WEST),
+    "7": (SOUTH, WEST),
+    "F": (SOUTH, EAST),
 }
-R = range(len(MAP))
-C = range(len(MAP[0]))
 
+input = sys.stdin.read()
+G = input.splitlines()
+R = len(G)
+C = len(G[0])
+LOOP = set()
 
-class Snake:
-    def __init__(self) -> None:
-        self.row = -1
-        self.col = -1
-        for row in R:
-            for col in C:
-                if MAP[row][col] == "S":
-                    self.row = row
-                    self.col = col
-                    break
-            if self.row in R and self.col in C:
-                break
-        assert self.row in R and self.col in C
-        self.tile = MAP[self.row][self.col]
-        self.dir = self.pick_dir()
+# find start
+r, c = next((r, c) for r in range(R) for c in range(C) if G[r][c] == "S")
+LOOP.add((r, c))
 
-    def pick_dir(self) -> str:
-        for dir in "NSEW":
-            if dir in PIPES[self.look(dir)]:
-                return dir
-        return ""
+# pick first step
+if G[r - 1][c] in ("|", "7", "F"):
+    r -= 1  # go north
+elif G[r + 1][c] in ("|", "L", "J"):
+    r += 1  # go south
+elif G[r][c + 1] in ("-", "J", "7"):
+    c += 1  # go east
+elif G[r][c - 1] in ("-", "L", "F"):
+    c -= 1  # go west
+LOOP.add((r, c))
 
-    def move(self, dir: str | None = None) -> None:
-        if dir is None:
-            dir = self.dir
-        match dir:
-            case "N":
-                self.row -= 1
-            case "S":
-                self.row += 1
-            case "E":
-                self.col += 1
-            case "W":
-                self.col -= 1
-            case _:
-                raise ValueError
-        self.tile = MAP[self.row][self.col]
-        self.dir = PIPES[self.tile][self.dir] if self.tile != "S" else ""
-
-    def look(self, dir: str) -> str:
-        match dir:
-            case "N":
-                return MAP[self.row - 1][self.col]
-            case "S":
-                return MAP[self.row + 1][self.col]
-            case "E":
-                return MAP[self.row][self.col + 1]
-            case "W":
-                return MAP[self.row][self.col - 1]
-            case _:
-                raise ValueError
-
-
-snake = Snake()
-LOOP = []
-while True:
-    LOOP.append(snake.tile)
-    snake.move()
-    if snake.tile == "S":
+while True:  # go through loop
+    connections = [(r + rr, c + cc) for rr, cc in CONNECTIONS[G[r][c]]]
+    try:
+        r, c = next((r, c) for r, c in connections if (r, c) not in LOOP)
+        LOOP.add((r, c))
+    except StopIteration:
         break
-print(len(LOOP) // 2)
+
+part1 = len(LOOP) // 2
+print(part1)
